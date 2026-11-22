@@ -1,5 +1,9 @@
+
+# Testbench outputs / simulator objects (do not commit generated vectors)
 build/
-.pytest_cache/
-__pycache__/
-*.pyc
 obj_dir/
+*.vcd
+*.fst
+*.log
+__pycache__/
+.pytest_cache/

@@ -5,9 +5,12 @@
  *           only on in_valid & in_ready; out_flit remains stable while
  *           out_valid & !out_ready. No frames are silently discarded.
  * TIMING: Combinational CRC/FEC is a reference model, not Gen6 Fmax closure.
+ * LINK EPOCH: flush discards buffered traffic on any link-down clock edge.
+ *            Top-level also masks out_valid immediately during link loss.
  */
 module pcie_flit_tx_pipe (
   input logic clk, rst_n,
+  input logic flush, /* clear queued FLIT when the negotiated link goes down */
   input logic in_valid,
   output logic in_ready,
   input logic [1887:0] in_tlp,
@@ -23,6 +26,8 @@ module pcie_flit_tx_pipe (
     if (!rst_n) begin
       out_valid<=1'b0;
       out_flit<='0;
+    end else if (flush) begin
+      out_valid<=1'b0;
     end else if (in_ready) begin
       out_valid<=in_valid;
       if (in_valid) out_flit<=encoded;

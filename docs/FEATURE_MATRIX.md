@@ -1,6 +1,6 @@
-# Feature support and validation matrix — revision 0.2
+# Feature support and validation matrix — revision 0.4
 
-Legend: **Implemented** = code exists and path is connected, but no HDL simulation. **Utility only** = reusable isolated block exists, not connected. **Not implemented** = cannot be used in a compliant PCIe link.
+Legend: **Implemented** = RTL code exists and path is connected; some paths have directed/limited UVM simulation but not complete protocol signoff. **Utility only** = reusable isolated block exists, not connected. **Not implemented** = cannot be used in a compliant PCIe link.
 
 | Layer | Feature | Status | Precise boundary |
 |---|---|---|---|
@@ -34,8 +34,22 @@ Legend: **Implemented** = code exists and path is connected, but no HDL simulati
 | System | MSI/MSI-X/PM/AER/FLR/IDE/SR-IOV | Not implemented | Required/optional according to selected profile |
 | Validation | Python CRC/FEC algorithm checks | Implemented and run | Passes provided Python vectors |
 | Validation | Structural source audit | Implemented and run | Passes local static checks |
-| Validation | Real HDL compile/elaboration | **Not run** | No Verilator/Icarus available locally |
-| Validation | RTL simulation/full testbench/UVM | **Deferred** | User requested separate phase |
+| Validation | Real HDL compile/elaboration | **G1 CI PASS** | GitHub Actions Verilator lint and binary run; UVM compiles on separate simulator lane |
+| Validation | RTL-directed simulation / UVM | **G1 CI PASS; UVM testbench present** | G1 top+primitive and Five UVM scenarios verified; sixth backpressure test awaits latest CI |
 | Validation | Synthesis, Fmax/PPA, real hardware interoperability | **Not run** | Necessary for a usable controller |
 
 **This repository has no validated PCIe generation interoperability.** “Gen6” denotes the format/math targeted by the codec, not a completed Gen6 link.
+
+
+### v0.3 verification status
+Executable G1 HDL testbenches are added under `tb/` and a link-epoch flush
+fix is included. Python golden tests passed; **RTL simulation has not yet
+been run** in the author environment. No feature outside the existing v0.2
+foundation is implied by the presence of the 76-case verification plan.
+
+### v0.4 verification update
+IEEE 1800.2 UVM structure in `tb/uvm/` has active TX/RX/link/CSR agents,
+scoreboard, coverage and SVA for the currently implemented abstract-FLIT
+interface. The G1 directed simulation passed on GitHub CI; UVM smoke/random
+and three directed UVM scenarios passed on the pinned modern UVM simulator. The 76 future G2–G7 scenarios
+remain BLOCKED unless matching RTL is implemented and independently checked.

@@ -6,9 +6,12 @@
  *           increments the error counter, but is never delivered to TL.
  *           The downstream protocol must generate suitable NAK/replay;
  *           that control engine is not yet implemented.
+ * LINK EPOCH: flush clears pending RX TLP and pulses, but preserves the
+ *             diagnostic drop count until reset.
  */
 module pcie_flit_rx_pipe (
   input logic clk, rst_n,
+  input logic flush, /* clear buffered output on loss of link */
   input logic in_valid,
   output logic in_ready,
   input logic [2047:0] in_flit,
@@ -22,11 +25,11 @@ module pcie_flit_rx_pipe (
 );
   logic [1887:0] decoded_tlp;
   logic [47:0] decoded_dlp;
-  logic fec_corr, fec_unc, crc_bad, decoded_valid;
+  logic fec_corr, decoded_valid;
   pcie_flit_decoder u_dec(
     .flit_in(in_flit),.tlp_area(decoded_tlp),.dlp(decoded_dlp),
-    .fec_corrected(fec_corr),.fec_uncorrectable(fec_unc),
-    .crc_error(crc_bad),.valid_flit(decoded_valid)
+    .fec_corrected(fec_corr),.fec_uncorrectable(),
+    .crc_error(),.valid_flit(decoded_valid)
   );
   assign in_ready=~out_valid || out_ready;
   always_ff @(posedge clk or negedge rst_n) begin
@@ -37,6 +40,10 @@ module pcie_flit_rx_pipe (
       drop_pulse<=0;
       fec_corrected_pulse<=0;
       crc_error_count<='0;
+    end else if (flush) begin
+      out_valid<=1'b0;
+      drop_pulse<=1'b0;
+      fec_corrected_pulse<=1'b0;
     end else begin
       drop_pulse<=0;
       fec_corrected_pulse<=0;
