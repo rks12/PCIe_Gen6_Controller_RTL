@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.4 — SystemVerilog UVM environment and regression
+
+- Added IEEE 1800.2 UVM agents (TX, RX, link, CSR), passive monitor,
+  virtual sequencer, deterministic and random sequences, independent
+  Python-FLIT scoreboard, transaction functional coverage, and SVA.
+- Added six runnable UVM tests for current RTL: smoke, random stress,
+  negative/invalid guard, link-down flush, all link widths/generations, and TX/RX backpressure
+  in negotiated FLIT mode.
+- Added a separate GitHub Actions UVM simulation workflow using a pinned
+  Verilator 5.054 binary and bundled Accellera UVM 2020-3.2 library.
+- Fixed the reproducible G1 primitive monitor directed-test failure by
+  driving the complete TLP-area bus; latest G1 CI passed.
+- **NOT** a full PCIe verification IP suite because most TL/DLL/LTSSM/PHY
+  modules remain missing. Full protocol cases remain BLOCKED.
+
 ## v0.3 — G1 executable testbench and link-epoch flush
 
 - Added deterministic Python-generated, independent golden FLIT inputs.

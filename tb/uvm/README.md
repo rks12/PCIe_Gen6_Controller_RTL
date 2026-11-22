@@ -1,7 +1,8 @@
 # SystemVerilog UVM testbench for PCIe Gen6 FLIT RTL prototype
 
-> **Status: source implementation authored; HDL/UVM compilation and execution
-> still require validation in a UVM-enabled simulator.** The existing
+> **Status: five UVM tests compiled and passed on GitHub CI with Verilator
+> 5.054 and UVM 2020-3.2. A sixth backpressure test has been added and is
+> awaiting its final CI result.** The existing
 > `G1` Verilator directed testbench runs separately. **This UVM environment is
 > not a complete PCIe 6.0 Root Complex VIP**, because the DUT itself lacks
 > PCIe Transaction Layer, full DLL, LTSSM and real PHY/PIPE integration.
@@ -27,6 +28,7 @@
 - `pcie_g6_negative_test`: malformed lengths (0/60/63), illegal Gen/width/mode
 - `pcie_g6_linkloss_test`: buffered TX/RX invalidated by lost link, then recovery
 - `pcie_g6_width_test`: all 5 supported link widths at 6 generation codes
+- `pcie_g6_backpressure_test`: stalled TX/RX stability and recovery
 
 ## Run
 

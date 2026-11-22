@@ -134,4 +134,34 @@ class pcie_g6_width_test extends pcie_g6_base_test;
     phase.drop_objection(this);
   endtask
 endclass
+
+class pcie_g6_backpressure_test extends pcie_g6_base_test;
+  `uvm_component_utils(pcie_g6_backpressure_test)
+  function new(string n,uvm_component p); super.new(n,p); endfunction
+  task run_phase(uvm_phase phase);
+    pcie_g6_virtual_seq s;
+    bit [2047:0] held_tx;
+    bit [1887:0] held_rx;
+    phase.raise_objection(this);
+    wait_reset();
+    s=pcie_g6_virtual_seq::type_id::create("backpressure_vseq");
+    s.vectors=vectors;s.set_sequencer(env.virtual_sqr);
+    s.set_link(1,1,6,4,0,0,2);
+    s.tx_one(3);
+    s.rx_one(4,1);
+    #1;
+    if(!vif.phy_tx_flit_valid || !vif.rx_tlp_area_valid)
+      `uvm_error("STALL","Buffers not occupied under blocked consumers")
+    held_tx=vif.phy_tx_flit; held_rx=vif.rx_tlp_area;
+    repeat(6) begin
+      @(posedge vif.clk); #1;
+      if(vif.phy_tx_flit!==held_tx || vif.rx_tlp_area!==held_rx ||
+         !vif.phy_tx_flit_valid || !vif.rx_tlp_area_valid)
+        `uvm_error("STALL","Backpressure corrupted a buffered FLIT/TLP")
+    end
+    s.set_link(1,1,6,4,1,1,4);
+    #80ns;
+    phase.drop_objection(this);
+  endtask
+endclass
 `endif

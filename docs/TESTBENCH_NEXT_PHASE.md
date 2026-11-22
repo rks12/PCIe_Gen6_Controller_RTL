@@ -1,6 +1,6 @@
-# Testbench to build separately later (not included in this archive)
+# Testbench implementation and remaining verification stages
 
-**Testbench is intentionally deferred**, as requested. Do NOT interpret Python algorithm checks as the future HDL testbench.
+**Current:** G1 directed HDL tests are implemented under `tb/sv/` and an IEEE 1800.2 UVM environment is implemented under `tb/uvm/` for the present abstract-FLIT DUT interface. Full PCIe TL/DLL/PHY UVM tests are BLOCKED until their RTL exists. Do not interpret Python checks or UVM codec passes as PCIe protocol compliance.
 
 ## Stage 0 — prepare compiler and waveforms
 
@@ -36,5 +36,7 @@ Every PCIe MUST/SHALL assertion included in selected implementation profile shou
 
 
 ### v0.3 update
-G1 smoke and utility HDL test sources now exist under `tb/sv/`; see
-`tb/README.md`. Full UVM / G2–G7 verification remains future work.
+G1 smoke/utility tests are now simulator-validated in GitHub Actions.
+UVM source, scripts, five test classes and a separate simulation workflow live
+under `tb/uvm/`; see `tb/uvm/README.md`. **Full G2–G7 PCIe protocol**
+verification remains BLOCKED on missing hardware logic.

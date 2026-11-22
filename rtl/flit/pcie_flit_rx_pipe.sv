@@ -25,11 +25,11 @@ module pcie_flit_rx_pipe (
 );
   logic [1887:0] decoded_tlp;
   logic [47:0] decoded_dlp;
-  logic fec_corr, fec_unc, crc_bad, decoded_valid;
+  logic fec_corr, decoded_valid;
   pcie_flit_decoder u_dec(
     .flit_in(in_flit),.tlp_area(decoded_tlp),.dlp(decoded_dlp),
-    .fec_corrected(fec_corr),.fec_uncorrectable(fec_unc),
-    .crc_error(crc_bad),.valid_flit(decoded_valid)
+    .fec_corrected(fec_corr),.fec_uncorrectable(),
+    .crc_error(),.valid_flit(decoded_valid)
   );
   assign in_ready=~out_valid || out_ready;
   always_ff @(posedge clk or negedge rst_n) begin

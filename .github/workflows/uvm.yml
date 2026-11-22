@@ -3,8 +3,6 @@
 # This job performs ACTUAL UVM elaboration/simulation (unlike uvm-audit).
 name: Full SV UVM Prototype Regression
 on:
-  push:
-    branches: [feature/g1-testbench-v0.3]
   pull_request:
   workflow_dispatch:
 jobs:
@@ -39,7 +37,7 @@ jobs:
       - name: Run remaining UVM scenarios on the same build
         run: |
           set -e
-          for t in pcie_g6_random_test pcie_g6_negative_test pcie_g6_linkloss_test pcie_g6_width_test; do
+          for t in pcie_g6_random_test pcie_g6_negative_test pcie_g6_linkloss_test pcie_g6_width_test pcie_g6_backpressure_test; do
             UVM_SKIP_BUILD=1 SEED=17 SIM=verilator UVM_TESTNAME="$t" bash tb/scripts/run_uvm.sh
           done
       - name: Upload UVM logs on failure

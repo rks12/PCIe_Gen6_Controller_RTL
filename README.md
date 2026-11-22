@@ -1,4 +1,4 @@
-# PCIe Gen1–Gen6 Endpoint Controller — RTL Research Foundation (v0.3)
+# PCIe Gen1–Gen6 Endpoint Controller — RTL Research Foundation (v0.4)
 
 > **STATUS — NOT A COMPLETE PCIe CONTROLLER.** This repository implements the core **PCIe 6.0 FLIT CRC/FEC digital codec**, one-frame ready/valid datapaths, limited single-TLP FLIT-area packing, link-status gating, basic local CSRs, and standalone initial utilities. It does **not** implement a PCI-SIG-compliant PCIe Gen1–Gen6 Endpoint. **Do not advertise this RTL as Gen6-capable on hardware or connect it directly to a commercial PCIe link.** See the detailed [feature matrix](docs/FEATURE_MATRIX.md) and remaining work.
 
@@ -23,7 +23,7 @@ The scope is explicit to prevent a dangerous *compiles = protocol works* assumpt
 5. **Production timing/PPA:** The reference CRC/FEC codec is a deep combinational implementation. It has not been pipelined for Gen6 clock rates, area/power, SRAM replay buffers, or x16 throughput.
 6. **System services:** Standard configuration-space registers, enumeration, DMA, MSI/MSI-X, AER error semantics, PM/ASPM/L1 substates, hot reset/FLR, integrity IDE, retimers, and optional virtualization/other capabilities.
 7. **Legacy Gen1–Gen5 non-FLIT link operation:** The LCRC reference utility exists, but no complete legacy TX/RX framing and retry path is integrated. FLIT mode at Gen1–Gen5 rates is also **only a codec**, not a PHY.
-8. **Verification:** A G1 standalone HDL testbench is now in `tb/` (v0.3); complete UVM remains deferred. See [testbench plan](docs/TESTBENCH_NEXT_PHASE.md).
+8. **Verification:** G1 directed HDL tests plus an IEEE 1800.2 SystemVerilog UVM environment for the *implemented abstract-FLIT interfaces* now live in `tb/`. The full protocol testbench remains blocked on missing Transaction/DLL/LTSSM/PHY RTL. See [UVM README](tb/uvm/README.md) and [testbench plan](docs/TESTBENCH_NEXT_PHASE.md).
 
 ## 3. RTL block diagram (as implemented)
 
@@ -58,7 +58,7 @@ The scope is explicit to prevent a dangerous *compiles = protocol works* assumpt
 
 [Initial conceptual architecture image](docs/architecture_overview.png) illustrates the **eventual** target controller; many blocks in that image are NOT present in this revision.
 
-## 4. Directory and file structure (v0.3)
+## 4. Directory and file structure (v0.4)
 
 ```text
 PCIe_Gen6_Controller_RTL/
@@ -93,15 +93,18 @@ PCIe_Gen6_Controller_RTL/
 │   └── source_audit.py               # Structural source completeness audit
 ├── checks/
 │   └── check_results.txt             # Original Python/source check evidence
-├── tb/                               # v0.3 executable G1 verification
+├── tb/                               # G1 + UVM verification of current RTL
 │   ├── README.md                     # Actual HDL test commands and limitations
 │   ├── sv/                           # Self-checking top and primitive SV tests
 │   ├── python/                       # Independent generated vectors + model checks
-│   ├── scripts/run_g1.sh             # Compiles and simulates real RTL
+│   ├── scripts/run_g1.sh             # Directed RTL simulator runner
+│   ├── scripts/run_uvm.sh            # UVM simulator runner (Questa/Verilator 5.054)
+│   ├── uvm/                           # IEEE 1800.2 agents/sequences/scoreboard/SVA/tests
 │   ├── plan/                         # Original 76-test full-protocol future plan
 │   └── results/                      # Truthful validation status
-├── .github/workflows/verify.yml      # Automated G1 verification on push/PR
-├── CHANGELOG.md                      # v0.3 details and link-loss fix
+├── .github/workflows/verify.yml      # Automated directed G1 verification
+├── .github/workflows/uvm.yml         # UVM 2020-3.2 compile & simulation on CI
+├── CHANGELOG.md                      # v0.3/v0.4 changes and validation
 └── docs/
     ├── architecture_overview.png     # Conceptual future target (not as-built)
     ├── ARCHITECTURE.md               # Interfaces, byte order and path limits
@@ -120,7 +123,7 @@ Every `.sv` file starts with a multiline comment describing its scope, functions
 ```bash
 sudo apt-get update
 sudo apt-get install -y make python3 verilator
-unzip PCIe_Gen6_Controller_RTL_with_TB_v0.3.zip
+unzip PCIe_Gen6_Controller_RTL_with_UVM_v0.4.zip
 cd PCIe_Gen6_Controller_RTL
 make check       # Python reference algorithm and structural audit
 make lint        # real SystemVerilog lint/elaboration: Verilator
@@ -131,7 +134,7 @@ make sources     # show compile-order RTL source list
 
 ```bash
 brew install python verilator make
-unzip PCIe_Gen6_Controller_RTL_with_TB_v0.3.zip
+unzip PCIe_Gen6_Controller_RTL_with_UVM_v0.4.zip
 cd PCIe_Gen6_Controller_RTL
 make check
 make lint
@@ -144,10 +147,7 @@ verilator --lint-only -Wall -Wno-fatal --top-module pcie_gen6_controller_top \
   -f scripts/rtl_sources.f
 ```
 
-**IMPORTANT:** In **v0.3**, executable G1 self-checking SystemVerilog tests are now included
-under [`tb/`](tb/README.md). They cover only the already implemented RTL
-foundation. The UVM/complete protocol suite remains unimplemented. Run
-`make tb-unit` after installing Verilator >=5.
+**IMPORTANT:** G1 directed tests and a **real UVM 1800.2 testbench** exist for the currently implemented 256-byte FLIT datapath, CSR and link guard. The UVM suite is not full PCIe protocol VIP. Run `make tb-unit` with Verilator >=5. For UVM, consult [`tb/uvm/README.md`](tb/uvm/README.md), install Accellera UVM plus a suitable simulator, and use `make tb-uvm`. A green UVM simulation proves only the exercised interface behavior, not PCIe compliance.
 
 ## 6. Top-level interface summary
 
@@ -177,7 +177,7 @@ The output `phy_tx_flit_valid` remains asserted until `phy_tx_flit_ready`, and t
 - Four two-byte error examples that must fail the final CRC check.
 - Source/header/filelist structure consistency.
 
-These are **Python golden-model checks**, not direct RTL execution. The creation environment did not provide Verilator, Icarus Verilog or Yosys and had no package-network access; hence **the RTL has not passed real HDL lint, elaboration, synthesis or simulation here**. Run `make lint` on your development machine and fix any issues reported before further development. The separate TB phase must include golden-vector RTL comparison, randomized link and reset corner cases, retry/FC verification, formal properties and interoperability tests.
+These first checks are **Python golden-model checks**, not direct RTL execution. However, **GitHub Actions has separately compiled and simulated the G1 RTL suite successfully**, including the corrected primitive monitor; see the `verify.yml` workflow. The new UVM workflow compiles with Verilator 5.054/Accellera UVM 2020-3.2 and exercises the implemented FLIT, CSR and link-guard interfaces. Synthesis, PCIe full protocol verification, hardware PHY and interoperability remain unverified. The first five UVM scenarios passed on GitHub Actions. The added sixth TX/RX backpressure scenario is covered by the latest CI workflow; check its result there.
 
 ## 8. Development sequence (before complete controller claim)
 
@@ -185,15 +185,15 @@ These are **Python golden-model checks**, not direct RTL execution. The creation
 2. **Data Link:** FM sequence handshake, DLP credit updates, ACK/NAK, retry/reorder; complete NFM link path.
 3. **Logical PHY:** LTSSM, TS1/TS2, speed/mode and lane negotiation, scramblers, coders, SKP/deskew/equalization; PIPE/vendor PHY shim.
 4. **PPA and robustness:** throughput-matched multi-lane datapaths, retiming, CDC, clocks/resets, replay memories.
-5. **Testbench separately:** block-level directed TB and integrated protocol/UVM suite with spec traceability.
+5. **Testbench expansion:** extend the existing UVM environment as RTL gains complete TL/DLL/PCS, add an independent Root Complex BFM, per-layer reference models and PCIe spec traceability.
 
 ### Licensing and provenance
 
 The RTL and scripts here were authored for this deliverable. The supplied PCIe specification is a copyrighted external document, **not included**; this project does not imply certification, licensing, PCI-SIG membership or permission to distribute that specification. The `docs/architecture_overview.png` is an illustrative concept, not a compliance artifact.
 
-## v0.3 — Testbench, CI and link-down correction
+## v0.4 — SystemVerilog UVM testbench and CI
 
-New additions are documented in [`tb/README.md`](tb/README.md) and
+Directed G1 test details are documented in [`tb/README.md`](tb/README.md), and UVM verification in [`tb/uvm/README.md`](tb/uvm/README.md), plus
 [`CHANGELOG.md`](CHANGELOG.md). Read **both** before running.
 
 ```bash
@@ -209,7 +209,19 @@ under [`tb/plan/`](tb/plan/). The presence of those plans does **not** mean
 that unsupported protocol features have been implemented or tested. The
 original conceptual diagram is not an as-built protocol diagram.
 
-**Validation status:** Python vector and structural checks passed locally;
-RTL compilation/simulation had not been run in the creation environment
-because no compatible simulator was installed. See
-[`tb/results/LOCAL_VALIDATION.md`](tb/results/LOCAL_VALIDATION.md).
+**Validation status:** GitHub CI now runs actual G1 RTL simulation and separate UVM simulation using a pinned UVM-capable Verilator build. The directed G1 workflow has passed; consult the latest PR checks for the status of the complete UVM regression. Neither suite can establish physical PCIe Gen6 compliance.
+
+### IEEE 1800.2 UVM simulator commands (new in v0.4)
+
+```bash
+make uvm-audit  # source inventory only, not a simulation
+SIM=questa UVM_TESTNAME=pcie_g6_smoke_test make tb-uvm
+SIM=questa make tb-uvm-regression
+# With Verilator >=5.052 and UVM 2020-3.2 installed:
+SIM=verilator UVM_HOME=/path/to/uvm make tb-uvm
+```
+
+Tests available: `pcie_g6_smoke_test`, `pcie_g6_random_test`,
+`pcie_g6_negative_test`, `pcie_g6_linkloss_test`, `pcie_g6_width_test`, `pcie_g6_backpressure_test`.
+They test the implemented codec-level interface, **not a Root Complex**,
+LTSSM, DLL replay, standard PCI configuration, or real 64 GT/s PHY.

@@ -2,7 +2,9 @@
 name: G1 RTL Foundation Verification
 on:
   push:
+    branches: [main]
   pull_request:
+  workflow_dispatch:
 jobs:
   g1-verification:
     runs-on: ubuntu-24.04
