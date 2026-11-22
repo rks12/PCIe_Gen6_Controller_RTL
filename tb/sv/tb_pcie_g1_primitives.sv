@@ -60,7 +60,7 @@ module tb_pcie_g1_primitives;
     check(available==0 && !consume_ready,"credit reset");
     check(expected_sequence==10'h001,"sequence reset");
     check(first_is_nop && first_type==0,"NOP monitor initial");
-    @(negedge clk);tlp_area[7:0]=8'h4A;
+    @(negedge clk);tlp_area={1880'b0,8'h4A};
     #1;
     $display("Monitor debug: in=%02h decoded=%02h nop=%b", tlp_area[7:0], first_type, first_is_nop);
     check(tlp_area[7:0]===8'h4A && !first_is_nop && first_type===8'h4A,"non-NOP header monitor");
