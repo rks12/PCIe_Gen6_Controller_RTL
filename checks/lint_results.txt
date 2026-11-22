@@ -1,0 +1,5 @@
+bash scripts/lint.sh
+ERROR: Verilator and Icarus Verilog are both unavailable.
+Install on Ubuntu/Debian: sudo apt-get install verilator
+No HDL compile has been performed; make check runs only algorithm/static checks.
+make: *** [Makefile:8: lint] Error 2

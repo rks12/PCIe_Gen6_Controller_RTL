@@ -1,0 +1,8 @@
+python3 scripts/source_audit.py
+PASS: 16 RTL files, 15 unique modules; source list/header/blocks checked
+NOTE: This is a structural check, not SystemVerilog syntax or elaboration
+python3 scripts/protocol_reference.py
+PASS: 6 Appendix K CRC basis vectors
+PASS: 4 random FLITs, 1,024 single-byte corruption recoveries
+PASS: 4 representative two-byte uncorrectable error cases
+ALL PYTHON ALGORITHM CHECKS PASSED (NOT RTL SIMULATION)

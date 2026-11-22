@@ -1,0 +1,16 @@
+rtl/common/pcie_gen6_pkg.sv
+rtl/common/pcie_lcrc32_reference.sv
+rtl/common/pcie_register_bank.sv
+rtl/dll/pcie_credit_counter.sv
+rtl/dll/pcie_flit_sequence_tracker.sv
+rtl/flit/pcie_crc64_gen.sv
+rtl/flit/pcie_fec_decoder.sv
+rtl/flit/pcie_fec_encoder.sv
+rtl/flit/pcie_flit_decoder.sv
+rtl/flit/pcie_flit_encoder.sv
+rtl/flit/pcie_flit_rx_pipe.sv
+rtl/flit/pcie_flit_tx_pipe.sv
+rtl/pcie_gen6_controller_top.sv
+rtl/phy/pcie_link_guard.sv
+rtl/tl/pcie_flit_tlp_packer.sv
+rtl/tl/pcie_tlp_type_monitor.sv

@@ -1,0 +1,41 @@
+# Feature support and validation matrix — revision 0.2
+
+Legend: **Implemented** = code exists and path is connected, but no HDL simulation. **Utility only** = reusable isolated block exists, not connected. **Not implemented** = cannot be used in a compliant PCIe link.
+
+| Layer | Feature | Status | Precise boundary |
+|---|---|---|---|
+| FLIT | 256B fixed layout (236+6+8+6) | Implemented | Full-frame bus |
+| FLIT | 8B CRC algorithm | Implemented | Six Appendix-K basis vectors match in Python |
+| FLIT | 3-way ECC encoder | Implemented | Python parity/check model run |
+| FLIT | Single-byte ECC correction + CRC-after-FEC | Implemented | Python single-byte fault model run |
+| FLIT | TX/RX ready/valid holding buffers | Implemented | RTL present, needs HDL simulation |
+| TL | One complete FM TLP, padding with NOP TLPs | Implemented (restricted) | 1..59 DW and no spanning |
+| TL | First-byte TLP type observability | Utility only | Type probe, not parser |
+| TL | Full FM TLP header/parser/OHC/TS | Not implemented | Mandatory to complete |
+| TL | Non-FLIT TLP header/parser | Not implemented | Mandatory for non-FLIT |
+| TL | Requester/completer, MRd/MWr, Cpl and errors | Not implemented | Mandatory to complete |
+| TL | PCI config space, BARs, enumeration | Not implemented | Mandatory to complete |
+| TL | Ordering/TC/VC and PCIe credit accounting | Not implemented | Generic counter utility only |
+| DLL | Legacy LCRC32 primitive | Utility only | Not connected to framing or replay |
+| DLL | Basic expected FLIT sequence tracker | Utility only | Not full Gen6 retry rules |
+| DLL | DLP payload generation/extraction | Not implemented | DLP supplied by caller |
+| DLL | FC init, updates, data link control/management | Not implemented | Mandatory to complete |
+| DLL | FM ACK/NAK, implicit/explicit seq, retry, reorder | Not implemented | Mandatory to complete |
+| DLL | NFM DLLP/sequence/LCRC/replay integration | Not implemented | Mandatory to complete |
+| PHY | External link-status validation | Implemented | Consumes external reported PHY status |
+| PHY | Real Detect/Polling/Config/Recovery LTSSM | Not implemented | Mandatory to complete |
+| PHY | Training sets and ordered sets | Not implemented | Mandatory to complete |
+| PHY | Gen1/2 8b/10b + scrambler | Not implemented | Mandatory to complete |
+| PHY | Gen3/4/5 128b/130b + scrambler | Not implemented | Mandatory to complete |
+| PHY | Gen6 1b/1b + PAM4 mapping/Gray/precoding | Not implemented | Mandatory to complete |
+| PHY | Lane striping, deskew, SKP, speed/width negotiation | Not implemented | Mandatory to complete |
+| PHY | Clocking, PIPE, analog SerDes, EQ, CDR | Not implemented | External IP/hardware required |
+| System | Local engineering CSR read/write | Implemented | NOT standard PCI config space |
+| System | MSI/MSI-X/PM/AER/FLR/IDE/SR-IOV | Not implemented | Required/optional according to selected profile |
+| Validation | Python CRC/FEC algorithm checks | Implemented and run | Passes provided Python vectors |
+| Validation | Structural source audit | Implemented and run | Passes local static checks |
+| Validation | Real HDL compile/elaboration | **Not run** | No Verilator/Icarus available locally |
+| Validation | RTL simulation/full testbench/UVM | **Deferred** | User requested separate phase |
+| Validation | Synthesis, Fmax/PPA, real hardware interoperability | **Not run** | Necessary for a usable controller |
+
+**This repository has no validated PCIe generation interoperability.** “Gen6” denotes the format/math targeted by the codec, not a completed Gen6 link.
