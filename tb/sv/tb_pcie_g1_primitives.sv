@@ -30,7 +30,9 @@ module tb_pcie_g1_primitives;
   pcie_credit_counter #(.CW(8)) counter (.*);
   pcie_flit_sequence_tracker tracker (.*);
   pcie_lcrc32_reference lcrc (.*);
-  pcie_tlp_type_monitor monitor (.*);
+  /* Explicit binding prevents accidental wildcard-port ambiguity. */
+  pcie_tlp_type_monitor u_tlp_type_monitor (
+    .tlp_area(tlp_area), .first_type(first_type), .first_is_nop(first_is_nop));
 
   task automatic check(input bit cond,input string name);
     if(!cond) $fatal(1,"FAIL primitive: %s at %0t",name,$time);
@@ -59,7 +61,9 @@ module tb_pcie_g1_primitives;
     check(expected_sequence==10'h001,"sequence reset");
     check(first_is_nop && first_type==0,"NOP monitor initial");
     @(negedge clk);tlp_area[7:0]=8'h4A;
-    #1;check(!first_is_nop && first_type==8'h4A,"non-NOP header monitor");
+    #1;
+    $display("Monitor debug: in=%02h decoded=%02h nop=%b", tlp_area[7:0], first_type, first_is_nop);
+    check(tlp_area[7:0]===8'h4A && !first_is_nop && first_type===8'h4A,"non-NOP header monitor");
     @(negedge clk);grant_valid=1;grant_amount=5;
     @(posedge clk);#1;check(available==5,"credit grant");
     @(negedge clk);grant_valid=0;consume_valid=1;

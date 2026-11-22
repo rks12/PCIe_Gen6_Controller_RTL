@@ -18,6 +18,7 @@ jobs:
         run: |
           make check
           make tb-model
+          make uvm-audit
       - name: RTL lint/elaboration
         run: make lint
       - name: Compile and run self-checking HDL tests
