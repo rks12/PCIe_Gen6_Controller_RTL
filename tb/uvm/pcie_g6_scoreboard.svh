@@ -20,8 +20,8 @@ class pcie_g6_coverage extends uvm_component;
     option.per_instance=1;
     cp_direction: coverpoint direction { bins tx={0}; bins rx={1}; }
     cp_length: coverpoint length_dw {
-      bins tiny={[1:4]}; bins small={[5:16]}; bins medium={[17:32]};
-      bins large={[33:58]}; bins max={59}; }
+      bins tiny={[1:4]}; bins len_short={[5:16]}; bins len_medium={[17:32]};
+      bins len_large={[33:58]}; bins max={59}; }
     cp_error: coverpoint corruption { bins clean={0}; bins corrected={1}; bins dropped={2}; }
     cross_direction_error: cross cp_direction,cp_error;
   endgroup
