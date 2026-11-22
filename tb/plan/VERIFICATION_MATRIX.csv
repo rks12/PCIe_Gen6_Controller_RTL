@@ -1,0 +1,77 @@
+test_id,gate,area,stimulus,expected_check,rtl_status_at_v0.2,spec_reference,testbench_status
+PCIE-TB-001,G0,Build,Compile all source modules,No syntax/elaboration errors,Current,N/A,PLANNED
+PCIE-TB-002,G0,Build,Top port-connection validation,All widths/types and hierarchy consistent,Current,N/A,PLANNED
+PCIE-TB-003,G0,Build,Reset determinism and X/U detection,No unknowns at checked outputs after reset,Current,§1.5,PLANNED
+PCIE-TB-004,G1,LinkGuard,No L0,All incoming/outgoing handshakes blocked,Current,§4.2,PLANNED
+PCIE-TB-005,G1,LinkGuard,Gen6 with FLIT disabled,Invalid negotiation flag; no link-ready,Current,§4.2/Table 4-1,PLANNED
+PCIE-TB-006,G1,LinkGuard,Gen1-5 without FLIT,Unsupported mode flag; FLIT datapath blocked,Current,§4.2/Table 4-1,PLANNED
+PCIE-TB-007,G1,LinkGuard,All valid speeds/widths FLIT enabled,Link-ready as per combinational guard,Current,§4.2/Table 4-1,PLANNED
+PCIE-TB-008,G1,LinkGuard,Illegal gen/width enumerations,Invalid flag and transfer blocked,Current,§4.2,PLANNED
+PCIE-TB-009,G1,Packer,Valid 1 DW,TLP bytes preserved; remainder NOP zero,Current,§4.2.3.4.1,PLANNED
+PCIE-TB-010,G1,Packer,Valid 59 DW,236 bytes preserved; no overflow,Current,§4.2.3.4.1,PLANNED
+PCIE-TB-011,G1,Packer,Invalid 0/60/63 DW,Length error; input not accepted,Current,§4.2.3.4.1,PLANNED
+PCIE-TB-012,G1,Packer,Random valid lengths,Byte ordering and NOP regions exact,Current,§4.2.3.4.1,PLANNED
+PCIE-TB-013,G1,CRC64,Zero/all-ones/alternating patterns,Equal independent Appendix K model,Current,§4.2.3.4.3/Appendix K,PLANNED
+PCIE-TB-014,G1,CRC64,One-hot and random bits across 242 B,All 8 CRC bytes match independent oracle,Current,§4.2.3.4.3/Appendix K,PLANNED
+PCIE-TB-015,G1,FEC,Known all-zero/all-one encoder parity,6 ECC bytes match independent model,Current,§4.2.3.4.4/Appendix J,PLANNED
+PCIE-TB-016,G1,FEC,Single-byte error in each of 256 positions,Original 250 B and status recovered,Current,§4.2.3.4.4,PLANNED
+PCIE-TB-017,G1,FEC,Single bit error in all 3 groups,Correction logged; final FLIT valid,Current,§4.2.3.4.4,PLANNED
+PCIE-TB-018,G1,FEC,One error in each of distinct groups,Correct according to 3-way FEC capabilities,Current,§4.2.3.4.4,PLANNED
+PCIE-TB-019,G1,FEC,Two bad bytes in same group,Never leak silently corrupted data; CRC controls validity,Current,§4.2.3.4.4,PLANNED
+PCIE-TB-020,G1,Codec,FLIT layout all positions,236 TLP + 6 DLP + 8 CRC + 6 ECC,Current,§4.2.3.3,PLANNED
+PCIE-TB-021,G1,Codec,Encode / independent reference / decode,Valid FLIT exact byte data,Current,§4.2.3.4,PLANNED
+PCIE-TB-022,G1,Codec,Corrupt DLP/CRC/ECC bytes,Correct or detect/drop as appropriate,Current,§4.2.3.4,PLANNED
+PCIE-TB-023,G1,Pipeline,Single TX accepted transfer,One and only one output transfer,Current,§1.5.4.4,PLANNED
+PCIE-TB-024,G1,Pipeline,Continuous RX and TX,No loss/duplication at supported throughput,Current,§1.5.4.4,PLANNED
+PCIE-TB-025,G1,Pipeline,Backpressure for long random stalls,VALID/data remain stable while stalled,Current,§1.5.4.4,PLANNED
+PCIE-TB-026,G1,Pipeline,Simultaneous dequeue/enqueue,Maintain ordering and no overwrite,Current,§1.5.4.4,PLANNED
+PCIE-TB-027,G1,Pipeline,Reset during pending transfer,Buffers flush according to reset contract,Current,§1.5.4.4,PLANNED
+PCIE-TB-028,G1,Pipeline,Link loss while buffered,No stale transfer after down/up; current RTL likely fails,Current,§2.9/§3.2,PLANNED
+PCIE-TB-029,G1,CSR,All read-only offsets and reserved reads,Expected signature/version/features/status,Current,§1.5,PLANNED
+PCIE-TB-030,G1,CSR,Scratch write/read/reset,Only scratch writable; proper reset,Current,§1.5,PLANNED
+PCIE-TB-031,G1,CSR,Corrected/drop pulse and counter,Pulse and saturating counts accurate,Current,§4.2.3.4.4,PLANNED
+PCIE-TB-032,G1,Utility,Legacy LCRC32 known reference vectors,Independent LCRC agreement,Standalone,§3.6,PLANNED
+PCIE-TB-033,G1,Utility,Credit counter grant/consume boundary,No illegal underflow or overflow,Standalone,§2.6,PLANNED
+PCIE-TB-034,G1,Utility,Sequence tracker wrap/clear/mismatch,10-bit sequence logic as documented,Standalone,§4.2.3.4.2.1,PLANNED
+PCIE-TB-035,G2,TL,Memory Write 32/64 address,Correct TLP and memory side effects,Missing,§2.2/§2.3,PLANNED
+PCIE-TB-036,G2,TL,Memory Read 32/64 address,Correct completion byte data/status,Missing,§2.2/§2.3,PLANNED
+PCIE-TB-037,G2,TL,First/last byte enables boundary cases,Correct byte masks or rejection,Missing,§2.2.5,PLANNED
+PCIE-TB-038,G2,TL,Max payload / max read request / 4KB boundary,Splitting/compliance matches rules,Missing,§2.2.7,PLANNED
+PCIE-TB-039,G2,TL,Tag and requester/completer ID,Correct routing and matching,Missing,§2.2.6/§2.3,PLANNED
+PCIE-TB-040,G2,TL,Split/interleaved completions,No duplication; correct ordering and byte count,Missing,§2.2.9/§2.3,PLANNED
+PCIE-TB-041,G2,TL,Timeout/UR/CA/unexpected completion,Required status/error handling,Missing,§2.8/§6.2,PLANNED
+PCIE-TB-042,G2,TL,Ordering posted/nonposted/completions,"Permitted order, no forbidden bypass",Missing,§2.4,PLANNED
+PCIE-TB-043,G2,TL,Multi-TLP and spanning across FLIT,Correct packaging and NOP alignment,Missing,§4.2.3.4.1,PLANNED
+PCIE-TB-044,G2,TL,Poison and nullification markers,Correct release/error semantics,Missing,§4.2.3.4.1/§4.2.3.4.2,PLANNED
+PCIE-TB-045,G2,CFG,Enumerate Type-0 endpoint,Discoverable IDs/capabilities,Missing,Ch.7,PLANNED
+PCIE-TB-046,G2,CFG,BAR sizing/read/write decode,Accurate host memory mapping,Missing,Ch.7,PLANNED
+PCIE-TB-047,G2,CFG,MSI/MSI-X when supported,Correct vector/ordering/mask,Missing,§6.1,PLANNED
+PCIE-TB-048,G2,CFG,Error reporting/FLR when supported,Status/reset response correct,Missing,§6.2/§6.6,PLANNED
+PCIE-TB-049,G3,FLIT DLL,IDLE handshake / initialize,Partner and DUT enter normal exchange correctly,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-050,G3,FLIT DLL,NOP vs payload vs IDLE FLIT,Correct sequence-number consumption,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-051,G3,FLIT DLL,Explicit and implicit sequence wrap,Exact 10-bit modulo behavior,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-052,G3,FLIT DLL,ACK and cumulative buffer release,Retry queue state correct,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-053,G3,FLIT DLL,NAK standard replay,Recover lost/corrupt FLIT with no duplication,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-054,G3,FLIT DLL,Selective NAK/replay,Only required FLIT retransmitted,Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-055,G3,FLIT DLL,"Lost ACK, timeout, replay buffer full","No silent loss, deadlock or overflow",Missing,§4.2.3.4.2.1,PLANNED
+PCIE-TB-056,G3,FLIT DLL,FC initialization and optimized updates,Credits matched and no underflow,Missing,§3.4/§4.2.3.4.2,PLANNED
+PCIE-TB-057,G3,FLIT DLL,DLP on replay can be regenerated,Replay TLP semantics correct,Missing,§4.2.3.4.2,PLANNED
+PCIE-TB-058,G4,Legacy DLL,STP/END/EDB packet framing,TLP boundaries exact,Missing,§4.2.1/§4.2.2,PLANNED
+PCIE-TB-059,G4,Legacy DLL,DLLP CRC16 and TLP LCRC32,Corruption detected and handled,Missing,§3.5/§3.6,PLANNED
+PCIE-TB-060,G4,Legacy DLL,ACK/NAK with retry/timeout,No loss/duplication under errors,Missing,§3.6,PLANNED
+PCIE-TB-061,G4,Legacy DLL,Legacy FC InitFC/UpdateFC,Correct credits per type,Missing,§3.4,PLANNED
+PCIE-TB-062,G5,PHY,Detect->Polling->Config->L0,"All legal transitions, timeouts checked",Missing,§4.2.6/§4.2.7,PLANNED
+PCIE-TB-063,G5,PHY,Gen1 and Gen2 8b/10b,Known encoding patterns decode correctly,Missing,§4.2.1,PLANNED
+PCIE-TB-064,G5,PHY,Gen3/4/5 128b/130b,Known block/scrambler behavior,Missing,§4.2.2,PLANNED
+PCIE-TB-065,G5,PHY,Gen6 1b/1b PAM4 logical mapping,Gray and precoding patterns correct,Missing,§4.2.3.1,PLANNED
+PCIE-TB-066,G5,PHY,FLIT mode negotiated at lower rates,Mode state follows training exchange,Missing,§4.2/Table 4-1,PLANNED
+PCIE-TB-067,G5,PHY,Gen6 mandatory FLIT / fallback,No illegal Gen6 NFM and correct fallback,Missing,§4.2/Table 4-1,PLANNED
+PCIE-TB-068,G5,PHY,All x1/x2/x4/x8/x16 widths,Lane striping and deskew correct,Missing,§4.2.5/§4.2.7,PLANNED
+PCIE-TB-069,G5,PHY,SKP insertion/removal and elastic buffer,Ordered set rules and no payload loss,Missing,§4.2.8,PLANNED
+PCIE-TB-070,G5,PHY,Equalization and speed recovery,Converges or legally falls back,Missing,§4.2.4/§4.2.7,PLANNED
+PCIE-TB-071,G5,PHY,"Hot reset, link down, electrical idle",No illegal transaction leakage,Missing,§4.2.7,PLANNED
+PCIE-TB-072,G6,System,RC enumeration and BAR operation,Expected function discovery and memory behavior,Missing,Ch.7,PLANNED
+PCIE-TB-073,G6,System,MWr/MRd + concurrent completions,Expected host memory content and correct status,Missing,§2.3,PLANNED
+PCIE-TB-074,G6,System,"Random traffic, stalls, credits, corruptions",All scoreboards match; no deadlock,Missing,§2–4,PLANNED
+PCIE-TB-075,G6,System,"Interrupt, reset and error recovery","Correct notification, clear, resumed operation",Missing,§5–7,PLANNED
+PCIE-TB-076,G7,External,Real PIPE/PHY and link partner,Documented interoperability and margins,Missing,Ch.8,PLANNED

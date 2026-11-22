@@ -66,6 +66,7 @@ module pcie_gen6_controller_top (
   logic bad_len;
   logic tx_pipe_ready;
   logic rx_pipe_ready;
+  logic phy_tx_flit_valid_raw, rx_tlp_area_valid_raw;
 
   pcie_link_guard u_link_guard (
     .phy_l0(phy_l0),.phy_flit_enabled(phy_flit_enabled),
@@ -82,20 +83,24 @@ module pcie_gen6_controller_top (
   assign tx_length_error=tx_tlp_valid && bad_len;
   assign tx_tlp_ready=flit_link_ready && !bad_len && tx_pipe_ready;
   pcie_flit_tx_pipe u_tx (
-    .clk(clk),.rst_n(rst_n),
+    .clk(clk),.rst_n(rst_n),.flush(!flit_link_ready),
     .in_valid(tx_tlp_valid && tx_tlp_ready),.in_ready(tx_pipe_ready),
     .in_tlp(padded_tlp),.in_dlp(tx_dlp),
-    .out_valid(phy_tx_flit_valid),.out_ready(phy_tx_flit_ready),
+    .out_valid(phy_tx_flit_valid_raw),.out_ready(phy_tx_flit_ready && flit_link_ready),
     .out_flit(phy_tx_flit)
   );
 
+  /* The PHY must never see a buffered frame after link-down.
+   * The synchronous pipe flush invalidates it on the next clk edge. */
+  assign phy_tx_flit_valid=phy_tx_flit_valid_raw && flit_link_ready;
+  assign rx_tlp_area_valid=rx_tlp_area_valid_raw && flit_link_ready;
   /* RX side must not advertise acceptance before link and RX buffer ready. */
   assign phy_rx_flit_ready=flit_link_ready && rx_pipe_ready;
   pcie_flit_rx_pipe u_rx (
-    .clk(clk),.rst_n(rst_n),
+    .clk(clk),.rst_n(rst_n),.flush(!flit_link_ready),
     .in_valid(phy_rx_flit_valid && phy_rx_flit_ready),
     .in_ready(rx_pipe_ready),.in_flit(phy_rx_flit),
-    .out_valid(rx_tlp_area_valid),.out_ready(rx_tlp_area_ready),
+    .out_valid(rx_tlp_area_valid_raw),.out_ready(rx_tlp_area_ready && flit_link_ready),
     .out_tlp(rx_tlp_area),.out_dlp(rx_dlp),
     .drop_pulse(rx_drop_pulse),
     .fec_corrected_pulse(rx_fec_corrected_pulse),

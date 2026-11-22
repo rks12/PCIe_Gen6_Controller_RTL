@@ -1,0 +1,31 @@
+# G1 research-prototype regression: never claim PCIe compliance from green CI.
+name: G1 RTL Foundation Verification
+on:
+  push:
+  pull_request:
+jobs:
+  g1-verification:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install SystemVerilog tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y make python3 verilator
+          verilator --version
+      - name: Source and independent golden-model checks
+        run: |
+          make check
+          make tb-model
+      - name: RTL lint/elaboration
+        run: make lint
+      - name: Compile and run self-checking HDL tests
+        run: make tb-unit TB_SEED=17
+      - name: Store failure logs and waveform
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: g1-debug-artifacts
+          path: build/tb/
+          if-no-files-found: ignore

@@ -33,3 +33,8 @@
 ## Coverage and signoff
 
 Every PCIe MUST/SHALL assertion included in selected implementation profile should map to: (1) source section, (2) RTL owner, (3) test case and (4) coverage assertion. Track supported/unsupported features precisely and do not promote the project to Gen6 capability without verified link training and a real PHY.
+
+
+### v0.3 update
+G1 smoke and utility HDL test sources now exist under `tb/sv/`; see
+`tb/README.md`. Full UVM / G2–G7 verification remains future work.

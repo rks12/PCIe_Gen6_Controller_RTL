@@ -6,9 +6,12 @@
  *           increments the error counter, but is never delivered to TL.
  *           The downstream protocol must generate suitable NAK/replay;
  *           that control engine is not yet implemented.
+ * LINK EPOCH: flush clears pending RX TLP and pulses, but preserves the
+ *             diagnostic drop count until reset.
  */
 module pcie_flit_rx_pipe (
   input logic clk, rst_n,
+  input logic flush, /* clear buffered output on loss of link */
   input logic in_valid,
   output logic in_ready,
   input logic [2047:0] in_flit,
@@ -37,6 +40,10 @@ module pcie_flit_rx_pipe (
       drop_pulse<=0;
       fec_corrected_pulse<=0;
       crc_error_count<='0;
+    end else if (flush) begin
+      out_valid<=1'b0;
+      drop_pulse<=1'b0;
+      fec_corrected_pulse<=1'b0;
     end else begin
       drop_pulse<=0;
       fec_corrected_pulse<=0;

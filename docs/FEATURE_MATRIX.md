@@ -39,3 +39,10 @@ Legend: **Implemented** = code exists and path is connected, but no HDL simulati
 | Validation | Synthesis, Fmax/PPA, real hardware interoperability | **Not run** | Necessary for a usable controller |
 
 **This repository has no validated PCIe generation interoperability.** “Gen6” denotes the format/math targeted by the codec, not a completed Gen6 link.
+
+
+### v0.3 verification status
+Executable G1 HDL testbenches are added under `tb/` and a link-epoch flush
+fix is included. Python golden tests passed; **RTL simulation has not yet
+been run** in the author environment. No feature outside the existing v0.2
+foundation is implied by the presence of the 76-case verification plan.

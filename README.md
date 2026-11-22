@@ -1,4 +1,4 @@
-# PCIe Gen1–Gen6 Endpoint Controller — RTL Research Foundation (v0.2)
+# PCIe Gen1–Gen6 Endpoint Controller — RTL Research Foundation (v0.3)
 
 > **STATUS — NOT A COMPLETE PCIe CONTROLLER.** This repository implements the core **PCIe 6.0 FLIT CRC/FEC digital codec**, one-frame ready/valid datapaths, limited single-TLP FLIT-area packing, link-status gating, basic local CSRs, and standalone initial utilities. It does **not** implement a PCI-SIG-compliant PCIe Gen1–Gen6 Endpoint. **Do not advertise this RTL as Gen6-capable on hardware or connect it directly to a commercial PCIe link.** See the detailed [feature matrix](docs/FEATURE_MATRIX.md) and remaining work.
 
@@ -23,7 +23,7 @@ The scope is explicit to prevent a dangerous *compiles = protocol works* assumpt
 5. **Production timing/PPA:** The reference CRC/FEC codec is a deep combinational implementation. It has not been pipelined for Gen6 clock rates, area/power, SRAM replay buffers, or x16 throughput.
 6. **System services:** Standard configuration-space registers, enumeration, DMA, MSI/MSI-X, AER error semantics, PM/ASPM/L1 substates, hot reset/FLR, integrity IDE, retimers, and optional virtualization/other capabilities.
 7. **Legacy Gen1–Gen5 non-FLIT link operation:** The LCRC reference utility exists, but no complete legacy TX/RX framing and retry path is integrated. FLIT mode at Gen1–Gen5 rates is also **only a codec**, not a PHY.
-8. **Verification:** A separate HDL testbench/UVM environment is explicitly deferred. See [testbench plan](docs/TESTBENCH_NEXT_PHASE.md).
+8. **Verification:** A G1 standalone HDL testbench is now in `tb/` (v0.3); complete UVM remains deferred. See [testbench plan](docs/TESTBENCH_NEXT_PHASE.md).
 
 ## 3. RTL block diagram (as implemented)
 
@@ -58,7 +58,7 @@ The scope is explicit to prevent a dangerous *compiles = protocol works* assumpt
 
 [Initial conceptual architecture image](docs/architecture_overview.png) illustrates the **eventual** target controller; many blocks in that image are NOT present in this revision.
 
-## 4. Directory and file structure
+## 4. Directory and file structure (v0.3)
 
 ```text
 PCIe_Gen6_Controller_RTL/
@@ -92,7 +92,16 @@ PCIe_Gen6_Controller_RTL/
 │   ├── protocol_reference.py         # Independent CRC/FEC golden model
 │   └── source_audit.py               # Structural source completeness audit
 ├── checks/
-│   └── check_results.txt             # Result of checks in creator environment
+│   └── check_results.txt             # Original Python/source check evidence
+├── tb/                               # v0.3 executable G1 verification
+│   ├── README.md                     # Actual HDL test commands and limitations
+│   ├── sv/                           # Self-checking top and primitive SV tests
+│   ├── python/                       # Independent generated vectors + model checks
+│   ├── scripts/run_g1.sh             # Compiles and simulates real RTL
+│   ├── plan/                         # Original 76-test full-protocol future plan
+│   └── results/                      # Truthful validation status
+├── .github/workflows/verify.yml      # Automated G1 verification on push/PR
+├── CHANGELOG.md                      # v0.3 details and link-loss fix
 └── docs/
     ├── architecture_overview.png     # Conceptual future target (not as-built)
     ├── ARCHITECTURE.md               # Interfaces, byte order and path limits
@@ -111,7 +120,7 @@ Every `.sv` file starts with a multiline comment describing its scope, functions
 ```bash
 sudo apt-get update
 sudo apt-get install -y make python3 verilator
-unzip PCIe_Gen6_Controller_RTL.zip
+unzip PCIe_Gen6_Controller_RTL_with_TB_v0.3.zip
 cd PCIe_Gen6_Controller_RTL
 make check       # Python reference algorithm and structural audit
 make lint        # real SystemVerilog lint/elaboration: Verilator
@@ -122,7 +131,7 @@ make sources     # show compile-order RTL source list
 
 ```bash
 brew install python verilator make
-unzip PCIe_Gen6_Controller_RTL.zip
+unzip PCIe_Gen6_Controller_RTL_with_TB_v0.3.zip
 cd PCIe_Gen6_Controller_RTL
 make check
 make lint
@@ -135,7 +144,10 @@ verilator --lint-only -Wall -Wno-fatal --top-module pcie_gen6_controller_top \
   -f scripts/rtl_sources.f
 ```
 
-**IMPORTANT:** This archive contains NO HDL testbench (as requested). Running these commands cannot prove actual hardware interoperability or full protocol correctness. Full HDL directed simulation, UVM, formal, synthesis and hardware checks belong to a separate phase.
+**IMPORTANT:** In **v0.3**, executable G1 self-checking SystemVerilog tests are now included
+under [`tb/`](tb/README.md). They cover only the already implemented RTL
+foundation. The UVM/complete protocol suite remains unimplemented. Run
+`make tb-unit` after installing Verilator >=5.
 
 ## 6. Top-level interface summary
 
@@ -178,3 +190,26 @@ These are **Python golden-model checks**, not direct RTL execution. The creation
 ### Licensing and provenance
 
 The RTL and scripts here were authored for this deliverable. The supplied PCIe specification is a copyrighted external document, **not included**; this project does not imply certification, licensing, PCI-SIG membership or permission to distribute that specification. The `docs/architecture_overview.png` is an illustrative concept, not a compliance artifact.
+
+## v0.3 — Testbench, CI and link-down correction
+
+New additions are documented in [`tb/README.md`](tb/README.md) and
+[`CHANGELOG.md`](CHANGELOG.md). Read **both** before running.
+
+```bash
+make tb-model      # Python golden-model checks only
+make tb-smoke      # real HDL top test (Verilator >=5)
+make tb-primitives # real HDL standalone utility tests
+make tb-unit       # both real HDL tests
+make tb-regression # repeat with multiple deterministic seeds
+```
+
+Historical G1–G7 verification planning documents and the 76-case matrix are
+under [`tb/plan/`](tb/plan/). The presence of those plans does **not** mean
+that unsupported protocol features have been implemented or tested. The
+original conceptual diagram is not an as-built protocol diagram.
+
+**Validation status:** Python vector and structural checks passed locally;
+RTL compilation/simulation had not been run in the creation environment
+because no compatible simulator was installed. See
+[`tb/results/LOCAL_VALIDATION.md`](tb/results/LOCAL_VALIDATION.md).
