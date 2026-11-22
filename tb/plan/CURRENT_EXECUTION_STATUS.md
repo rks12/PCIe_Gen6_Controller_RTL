@@ -14,6 +14,5 @@ The 76 rows of VERIFICATION_MATRIX.csv are requirement plans, not observed
 PASS results. In particular, a model pass does not imply the HDL passed.
 
 - **Prototype IEEE 1800.2 UVM**: agents, sequences, scoreboard, SVA and
-  six test scenarios exist under `tb/uvm/`. The UVM smoke/random tests
-  passed on GitHub Actions together with negative, link-loss and width tests;
-  newly added backpressure case awaits latest CI.
+  six test scenarios exist under `tb/uvm/`. All six (smoke, random, negative,
+  link-loss, width and backpressure) passed on GitHub Actions with seed 17.

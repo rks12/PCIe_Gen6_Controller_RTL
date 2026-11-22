@@ -1,8 +1,7 @@
 # SystemVerilog UVM testbench for PCIe Gen6 FLIT RTL prototype
 
-> **Status: five UVM tests compiled and passed on GitHub CI with Verilator
-> 5.054 and UVM 2020-3.2. A sixth backpressure test has been added and is
-> awaiting its final CI result.** The existing
+> **Status: six UVM tests compiled and passed on GitHub CI with Verilator
+> 5.054 and UVM 2020-3.2 (seed 17).** The existing
 > `G1` Verilator directed testbench runs separately. **This UVM environment is
 > not a complete PCIe 6.0 Root Complex VIP**, because the DUT itself lacks
 > PCIe Transaction Layer, full DLL, LTSSM and real PHY/PIPE integration.
@@ -60,7 +59,7 @@ tb/uvm/
   pcie_g6_scoreboard.svh  reference comparisons + coverage
   pcie_g6_sequences.svh   reusable child + virtual sequences
   pcie_g6_env.svh         monitor/scoreboard/agents connections
-  pcie_g6_tests.svh       5 runnable UVM test classes
+  pcie_g6_tests.svh       6 runnable UVM test classes
   pcie_g6_sva.sv          concurrent safety assertions
   pcie_g6_tb_top.sv       named DUT connections, clock/reset
   uvm_sources.f           UVM source file order

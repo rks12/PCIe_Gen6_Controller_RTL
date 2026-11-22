@@ -177,7 +177,7 @@ The output `phy_tx_flit_valid` remains asserted until `phy_tx_flit_ready`, and t
 - Four two-byte error examples that must fail the final CRC check.
 - Source/header/filelist structure consistency.
 
-These first checks are **Python golden-model checks**, not direct RTL execution. However, **GitHub Actions has separately compiled and simulated the G1 RTL suite successfully**, including the corrected primitive monitor; see the `verify.yml` workflow. The new UVM workflow compiles with Verilator 5.054/Accellera UVM 2020-3.2 and exercises the implemented FLIT, CSR and link-guard interfaces. Synthesis, PCIe full protocol verification, hardware PHY and interoperability remain unverified. The first five UVM scenarios passed on GitHub Actions. The added sixth TX/RX backpressure scenario is covered by the latest CI workflow; check its result there.
+These first checks are **Python golden-model checks**, not direct RTL execution. However, **GitHub Actions has separately compiled and simulated the G1 RTL suite successfully**, including the corrected primitive monitor; see the `verify.yml` workflow. The new UVM workflow compiles with Verilator 5.054/Accellera UVM 2020-3.2 and exercises the implemented FLIT, CSR and link-guard interfaces. Synthesis, PCIe full protocol verification, hardware PHY and interoperability remain unverified. All six UVM scenarios, including TX/RX backpressure, passed on GitHub Actions (Verilator 5.054, UVM 2020-3.2, seed 17): https://github.com/rks12/PCIe_Gen6_Controller_RTL/actions/runs/45027569947 .
 
 ## 8. Development sequence (before complete controller claim)
 

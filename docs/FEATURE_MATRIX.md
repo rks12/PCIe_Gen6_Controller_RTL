@@ -35,7 +35,7 @@ Legend: **Implemented** = RTL code exists and path is connected; some paths have
 | Validation | Python CRC/FEC algorithm checks | Implemented and run | Passes provided Python vectors |
 | Validation | Structural source audit | Implemented and run | Passes local static checks |
 | Validation | Real HDL compile/elaboration | **G1 CI PASS** | GitHub Actions Verilator lint and binary run; UVM compiles on separate simulator lane |
-| Validation | RTL-directed simulation / UVM | **G1 CI PASS; UVM testbench present** | G1 top+primitive and Five UVM scenarios verified; sixth backpressure test awaits latest CI |
+| Validation | RTL-directed simulation / UVM | **G1 CI PASS; UVM testbench present** | G1 top+primitive and all six UVM scenarios (including backpressure) passed GitHub CI, seed 17 |
 | Validation | Synthesis, Fmax/PPA, real hardware interoperability | **Not run** | Necessary for a usable controller |
 
 **This repository has no validated PCIe generation interoperability.** “Gen6” denotes the format/math targeted by the codec, not a completed Gen6 link.
