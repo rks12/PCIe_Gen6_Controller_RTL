@@ -189,7 +189,11 @@ These first checks are **Python golden-model checks**, not direct RTL execution.
 
 ### Licensing and provenance
 
-The RTL and scripts here were authored for this deliverable. The supplied PCIe specification is a copyrighted external document, **not included**; this project does not imply certification, licensing, PCI-SIG membership or permission to distribute that specification. The `docs/architecture_overview.png` is an illustrative concept, not a compliance artifact.
+Repository-owned source code, testbenches, scripts, and documentation are made available under the **MIT License**; see [LICENSE](LICENSE). This licence applies only to material the copyright holder has the rights to license. Preserve the licence notice when redistributing this work.
+
+**Third-party dependencies are not relicensed by this repository.** See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for the tools and external materials used or referenced. In particular, Accellera UVM and the Verilator toolchain are obtained separately, not vendored into this source tree. Check their respective upstream licences and redistribution terms when packaging a task or container.
+
+The PCI Express Base Specification is copyrighted external material, **not included or redistributed** here. PCIe protocol names do not imply permission to redistribute the specification or claim PCI-SIG compliance/certification. The `docs/architecture_overview.png` is an illustrative concept, not a compliance artifact.
 
 ## v0.4 — SystemVerilog UVM testbench and CI
 
