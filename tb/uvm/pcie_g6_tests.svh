@@ -72,6 +72,7 @@ class pcie_g6_negative_test extends pcie_g6_base_test;
     wait_reset();
     s=pcie_g6_virtual_seq::type_id::create("negative_vseq");
     s.vectors=vectors;
+    s.set_sequencer(env.virtual_sqr);
     s.set_link(1,1,6,4); guard_check(1,"valid link");
     s.tx_one(0,1,0);
     s.tx_one(0,1,60);
@@ -95,6 +96,7 @@ class pcie_g6_linkloss_test extends pcie_g6_base_test;
     phase.raise_objection(this);
     wait_reset();
     s=pcie_g6_virtual_seq::type_id::create("linkloss_vseq");s.vectors=vectors;
+    s.set_sequencer(env.virtual_sqr);
     // Stall both consumer ports, then enqueue exactly one frame each.
     s.set_link(1,1,6,4,0,0);
     s.tx_one(1);
@@ -119,6 +121,7 @@ class pcie_g6_width_test extends pcie_g6_base_test;
     phase.raise_objection(this);
     wait_reset();
     s=pcie_g6_virtual_seq::type_id::create("width_vseq");s.vectors=vectors;
+    s.set_sequencer(env.virtual_sqr);
     for(int gen=1;gen<=6;gen++) begin
       foreach(widths[i]) begin
         s.set_link(1,1,3'(gen),widths[i]);
